@@ -7,7 +7,6 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 class MockNativeQrPlatform
     with MockPlatformInterfaceMixin
     implements NativeQrPlatform {
-
   @override
   Future<String?> getQrCode() {
     // TODO: implement getQrCode

@@ -31,23 +31,28 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('NativeQrPlugin example app'),
         ),
-        body: Container( alignment: Alignment.center,
-          child: Column(children: [
-            ElevatedButton(onPressed: () async {
-              try {
-                var result = await _nativeQr.get();
-                setState(() {
-                  qrString = result;
-                });
-              } catch(err) {
-                setState(() {
-                  qrString = err.toString();
-                });
-              }
-            }, child: const Text("Scan"), ),
-            Text(qrString ?? "No data")
-          ],)
-        ),
+        body: Container(
+            alignment: Alignment.center,
+            child: Column(
+              children: [
+                ElevatedButton(
+                  onPressed: () async {
+                    try {
+                      var result = await _nativeQr.get();
+                      setState(() {
+                        qrString = result;
+                      });
+                    } catch (err) {
+                      setState(() {
+                        qrString = err.toString();
+                      });
+                    }
+                  },
+                  child: const Text("Scan"),
+                ),
+                Text(qrString ?? "No data")
+              ],
+            )),
       ),
     );
   }

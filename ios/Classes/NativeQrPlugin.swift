@@ -56,11 +56,11 @@ public class NativeQrPlugin: UIViewController, FlutterPlugin, DataScannerViewCon
         NotificationCenter.default.removeObserver(observer!)
     }
     
-    @objc func pressed() {
+    @objc func closeButtonPressed() {
         cleanupAndClose()
     }
     
-    @MainActor private func getQrCode(){
+    @MainActor private func getQrCode() -> Bool {
         viewController.delegate = self
         
         let rootViewController = (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.windows.filter({ (w) -> Bool in
@@ -69,7 +69,7 @@ public class NativeQrPlugin: UIViewController, FlutterPlugin, DataScannerViewCon
         
         let closeButton = UIButton(type: .close)
         closeButton.frame = CGRectMake(self.view.frame.width - 60, 50, 35, 35)
-        closeButton.addTarget(self, action: #selector(pressed), for: .touchUpInside)
+        closeButton.addTarget(self, action: #selector(closeButtonPressed), for: .touchUpInside)
         
         viewController.modalPresentationStyle = .fullScreen
         viewController.view.addSubview(closeButton)
@@ -77,15 +77,24 @@ public class NativeQrPlugin: UIViewController, FlutterPlugin, DataScannerViewCon
 
         do {
             try viewController.startScanning()
+            return true
         }
         catch {
-            print("err")
+            return false
         }
     }
     
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
         case "getQrCode":
+            if(!DataScannerViewController.isSupported){
+                result(FlutterError(code: "UNSUPPORTED", message: "DataScannerViewController is upsupported on this device", details: nil))
+                break
+            }
+            if(!DataScannerViewController.isAvailable){
+                result(FlutterError(code: "UNAVAILABLE", message: "DataScannerViewController is unavailable now", details: nil))
+                break
+            }
             observer = NotificationCenter.default.addObserver(forName: .QrCodeFound, object: nil, queue: OperationQueue()) { [weak self] msg in
                 let item = msg.object as! RecognizedItem
                 
@@ -103,7 +112,9 @@ public class NativeQrPlugin: UIViewController, FlutterPlugin, DataScannerViewCon
                 }
                 
             }
-            getQrCode()
+            if(!getQrCode()){
+                result(FlutterError(code: "CANTSTART", message: "DataScannerViewController can't start scanning", details: nil))
+            }
             break;
         default:
             result(FlutterError(code: "UNIMPLEMENTED", message: "Method is not implemented", details: nil))

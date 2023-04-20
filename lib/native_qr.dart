@@ -1,4 +1,3 @@
-
 import 'native_qr_platform_interface.dart';
 
 class NativeQr {

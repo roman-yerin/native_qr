@@ -35,9 +35,11 @@ try {
 
 Camera permission is required, so `Privacy - Camera Usage Description` aka `NSCameraUsageDescription` has to be set in your Info.plist
 
-IOS implementation uses [DataScannerViewController]("https://developer.apple.com/documentation/visionkit/datascannerviewcontroller"), which is available since version 16.0, so you have to set project deployment target to 16.0 to use this plugin.
+IOS implementation uses [DataScannerViewController](https://developer.apple.com/documentation/visionkit/datascannerviewcontroller), which is available since version 16.0, so you have to set project deployment target to 16.0 to use this plugin.
 
 The running device must have the A12 Bionic chip or later.
+
+If your app requires Live Text for its core functionality, you can make your app available only on devices that support Live Text. Add the [`UIRequiredDeviceCapabilities`](https://developer.apple.com/documentation/bundleresources/information_property_list/uirequireddevicecapabilities) key to your app’s information property list and include the `iphone-ipad-minimum-performance-a12` subkey in the array of device capabilities.
 
 ### Android
 
