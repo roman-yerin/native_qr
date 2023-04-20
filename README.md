@@ -21,8 +21,8 @@ import 'package:native_qr/native_qr.dart';
 
 ```dart
 try {
-	NativeQr nativeQr = NativeQr();
-	String? result = await nativeQr.get();  
+  NativeQr nativeQr = NativeQr();
+  String? result = await nativeQr.get();  
 } catch(err) {
   print(err);
 }
