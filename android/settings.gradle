@@ -1,0 +1,8 @@
+rootProject.name = 'native_qr'
+
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
