@@ -1,7 +1,12 @@
 name: native_qr
-description: A new Flutter plugin project.
+description: The simplest QR code scanner for Flutter ever.
 version: 0.0.1
-homepage:
+homepage: https://github.com/roman-yerin/native_qr
+repository: https://github.com/roman-yerin/native_qr
+platforms:
+  android:
+  ios:
+funding: https://patreon.com/RomanYerin
 
 environment:
   sdk: '>=2.19.6 <3.0.0'
