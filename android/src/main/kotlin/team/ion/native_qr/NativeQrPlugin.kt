@@ -39,11 +39,11 @@ class NativeQrPlugin: FlutterPlugin, MethodCallHandler {
         }
         .addOnCanceledListener {
           // Task canceled
-          result.error("canceled", null, null)
+            result.error("CANCELED", null, null)
         }
         .addOnFailureListener { e ->
           // Task failed with an exception
-          result.error("canceled", null, e)
+          result.error("ERROR", null, e)
         }
       }
       else -> result.notImplemented()

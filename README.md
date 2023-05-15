@@ -62,10 +62,18 @@ Android implementation uses [GmsBarcodeScanner](https://developers.google.com/an
 </application>
 ```
 
+## Error handling
+
+The plugin either returnes the scanned data or throws an exception that is one of the following.
+
+1. **CANCELED**: scanning operation has been canceled
+1. **ERROR**: some error happened
+1. **UNKNOWN**: God knows what happened and you highly likely will never see this type of error
+
 ## Limitations and known issues
 
 1. Only QR codes supported (can be changed in case it is needed, open a feature request on Github)
-2. IOS implementation since 16.0 (which is 81% of the market share as for March, 2023)
+2. IOS implementation since 16.0 (which is >90% of the market share as for May, 2023)
 3. Only string representation of QR encoded data is provided
 4. The result will be only one QR in the camera's field of view, which one is unpredictable
 5. IOS multiscene apps unsupported, the plugin uses the first scene to present the camera view

@@ -6,12 +6,17 @@ extension NSNotification.Name {
     static var QrCodeFound: Notification.Name {
         return .init(rawValue: "QrCodeFound")
     }
+    static var ScanCanceled: Notification.Name {
+        return .init(rawValue: "ScanCanceled")
+    }
 }
 
 
 @available(iOS 16.0, *)
 public class NativeQrPlugin: UIViewController, FlutterPlugin, DataScannerViewControllerDelegate {
-    private var observer : NSObjectProtocol?
+    private var successObserver : NSObjectProtocol?
+    private var cancelObserver : NSObjectProtocol?
+
     private var viewController = DataScannerViewController(
         recognizedDataTypes: [.barcode(symbologies: [.qr])],
         qualityLevel: .balanced,
@@ -51,13 +56,16 @@ public class NativeQrPlugin: UIViewController, FlutterPlugin, DataScannerViewCon
     }
     
     private func cleanupAndClose(){
-        viewController.stopScanning()
-        viewController.dismiss(animated: true)
-        NotificationCenter.default.removeObserver(observer!)
+        DispatchQueue.main.async { [weak self] in
+            self?.viewController.stopScanning()
+            self?.viewController.dismiss(animated: true)
+        }
+        NotificationCenter.default.removeObserver(successObserver!)
+        NotificationCenter.default.removeObserver(cancelObserver!)
     }
     
     @objc func closeButtonPressed() {
-        cleanupAndClose()
+        NotificationCenter.default.post(name: .ScanCanceled, object: nil)
     }
     
     @MainActor private func getQrCode() -> Bool {
@@ -88,20 +96,20 @@ public class NativeQrPlugin: UIViewController, FlutterPlugin, DataScannerViewCon
         switch call.method {
         case "getQrCode":
             if(!DataScannerViewController.isSupported){
-                result(FlutterError(code: "UNSUPPORTED", message: "DataScannerViewController is upsupported on this device", details: nil))
+                result(FlutterError(code: "ERROR", message: "DataScannerViewController is upsupported on this device", details: nil))
                 break
             }
             if(!DataScannerViewController.isAvailable){
-                result(FlutterError(code: "UNAVAILABLE", message: "DataScannerViewController is unavailable now", details: nil))
+                result(FlutterError(code: "ERROR", message: "DataScannerViewController is unavailable now", details: nil))
                 break
             }
-            observer = NotificationCenter.default.addObserver(forName: .QrCodeFound, object: nil, queue: OperationQueue()) { [weak self] msg in
+            successObserver = NotificationCenter.default.addObserver(forName: .QrCodeFound, object: nil, queue: OperationQueue()) { [weak self] msg in
                 let item = msg.object as! RecognizedItem
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
                     self!.cleanupAndClose()
                 }
-
+                
                 switch item {
                 case .barcode(let code):
                     result(code.payloadStringValue);
@@ -112,8 +120,13 @@ public class NativeQrPlugin: UIViewController, FlutterPlugin, DataScannerViewCon
                 }
                 
             }
+            cancelObserver = NotificationCenter.default.addObserver(forName: .ScanCanceled, object: nil, queue: OperationQueue()) { [weak self] msg in
+                self!.cleanupAndClose()
+                result(FlutterError(code: "CANCELED", message: "Qr code scanning canceled", details: nil))
+            }
+            
             if(!getQrCode()){
-                result(FlutterError(code: "CANTSTART", message: "DataScannerViewController can't start scanning", details: nil))
+                result(FlutterError(code: "ERROR", message: "DataScannerViewController can't start scanning", details: nil))
             }
             break;
         default:
