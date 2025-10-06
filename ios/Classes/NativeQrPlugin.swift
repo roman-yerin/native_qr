@@ -106,9 +106,9 @@ public class NativeQrPlugin: UIViewController, FlutterPlugin, DataScannerViewCon
             successObserver = NotificationCenter.default.addObserver(forName: .QrCodeFound, object: nil, queue: OperationQueue()) { [weak self] msg in
                 let item = msg.object as! RecognizedItem
                 
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-                    self!.cleanupAndClose()
-                }
+                // DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                self!.cleanupAndClose()
+                // }
                 
                 switch item {
                 case .barcode(let code):
